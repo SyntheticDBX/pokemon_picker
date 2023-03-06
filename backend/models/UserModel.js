@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const validator = require('validator');
 
 const Schema = mongoose.Schema;
@@ -22,25 +22,29 @@ const userSchema = new Schema({
     },
     starter: {
         type: String,
+        enum: ['fire', 'water', 'grass'],
         required: true
     }
 })
 
 // static method signup
-userSchema.statics.signup = async function(username, password, email) {
+userSchema.statics.signup = async function(username, password, email, starter) {
 
     // validate username, password and email
     if(!username || !password || !email || !starter) {
-        throw Error('Please fill in  all the fields');
+        throw Error('Please fill in all the fields');
     }
-    if (!this.validateEmail(email)) {
+    if (!validator.isEmail(email)) {
         throw Error('Please enter a valid email address');
     }
-    if(!this.validatePassword(password)) {
+    if(!validator.isStrongPassword(password)) {
         throw Error('Password must be at least 8 characters long and contain at least one number, one lowercase and one uppercase letter');
     }
-    if(!this.validateUsername(username)) {
+    if(!validator.isAlphanumeric(username) ) {
         throw Error('Username must be at least 3 characters long and contain only letters and numbers');
+    }
+    if(!starter) {
+        throw Error('Please select a starter pokemon');
     }
 
     // check if username or email already exists
@@ -57,7 +61,8 @@ userSchema.statics.signup = async function(username, password, email) {
     const user = new this({
         username,
         password: hash,
-        email
+        email,
+        starter
     });
 
     // save user to database

@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
 
 const createToken = (_id) => {
@@ -25,8 +25,8 @@ const loginUser = async (req, res) => {
   // user signup
 const signupUser = async (req, res) => {
 	try {
-		const { username, password, email } = req.body;
-		const user = await User.signup(username, password, email);
+		const { username, password, email, starter } = req.body;
+		const user = await User.signup(username, password, email, starter);
 		const token = createToken(user._id);
 		res.cookie("jwt", token, {
 			httpOnly: true,

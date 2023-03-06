@@ -45,9 +45,9 @@ const Signup = () => {
         <label>
           Type:
           <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="fire">Fire</option>
-            <option value="water">Water</option>
-            <option value="grass">Grass</option>
+            <option value="Fire">Fire</option>
+            <option value="Water">Water</option>
+            <option value="Grass">Grass</option>
           </select>
         </label>
         <button type="submit" disabled={isLoading}>

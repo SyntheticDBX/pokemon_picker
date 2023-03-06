@@ -1,4 +1,4 @@
-const Teams = require("../models/Teams");
+const Teams = require("../models/TeamsModel");
 const mongoose = require("mongoose");
 
 // get all teams
