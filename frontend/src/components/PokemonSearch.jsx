@@ -5,6 +5,7 @@ function PokemonSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [pokemon, setPokemon] = useState(null);
   const [error, setError] = useState(null);
+  const [team, setTeam] = useState([]);
 
   async function handleSearch(event) {
     event.preventDefault();
@@ -27,6 +28,17 @@ function PokemonSearch() {
     }
   }
 
+  // add pokemon to a team, which would be an array of pokemon with a max length of 6
+  
+  function handleAddPokemon() {
+    if (team.length < 6) {
+      setTeam([...team, pokemon]);
+    } else {
+      alert("Your team is full!");
+    }
+  }
+
+
   return (
     <div className="container">
       <form onSubmit={handleSearch} className="search-form">
@@ -39,6 +51,7 @@ function PokemonSearch() {
           />
         </label>
         <button type="submit">Search</button>
+        <button type="button" onClick={handleAddPokemon}>Add to team</button>
       </form>
       {pokemon && (
         <div className="pokemon-container">

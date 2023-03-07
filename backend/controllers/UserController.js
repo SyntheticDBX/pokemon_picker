@@ -16,7 +16,7 @@ const loginUser = async (req, res) => {
 			httpOnly: true,
 			maxAge: 60 * 60 * 24 * 365 * 1000,
 		});
-		res.status(200).json({ user: user._id });
+		res.status(200).json({ username, token });
 	} catch (error) {
 		res.status(400).json({ error: error.message });
 	}
@@ -32,7 +32,7 @@ const signupUser = async (req, res) => {
 			httpOnly: true,
 			maxAge: 60 * 60 * 24 * 365 * 1000,
 		});
-		res.status(201).json({ user: user._id });
+		res.status(201).json({ email, user: _id, token });
 	} catch (error) {
 		res.status(400).json({ error: error.message });
 	}
@@ -44,9 +44,10 @@ const logoutUser = (req, res) => {
 	res.redirect("/");
 };
 
+// user profile
 const findUserById = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id);
+		const user = await User.findById({_id: userId});
 		res.status(200).json(user);
 	} catch (error) {
 		res.status(404).json({ message: error.message });
