@@ -1,0 +1,31 @@
+.navLink {
+  cursor: pointer;
+  color: black;
+
+  &.selected {
+    cursor: default;
+    color: white;
+    background-color: rgb(160, 160, 160);
+
+    &:hover,
+    &:focus {
+      background-color: rgb(160, 160, 160);
+    }
+  }
+
+  &:hover,
+  &:focus {
+    background-color: red;
+    color: white;
+  }
+}
+
+.menu {
+  margin-right: 10px;
+  margin-left: auto;
+}
+
+.greeting {
+  padding-top: 8px;
+  padding-right: 4px;
+}
