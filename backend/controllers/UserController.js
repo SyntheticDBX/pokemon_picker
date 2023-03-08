@@ -47,7 +47,7 @@ const logoutUser = (req, res) => {
 // user profile
 const findUserById = async (req, res) => {
 	try {
-		const user = await User.findById({_id: userId});
+		const user = await User.findById({ _id: req.params.id});
 		res.status(200).json(user);
 	} catch (error) {
 		res.status(404).json({ message: error.message });
