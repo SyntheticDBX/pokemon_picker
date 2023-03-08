@@ -23,7 +23,7 @@ const getTeams = async (req, res) => {
 };
 
 // add a new team to the database
-const addTeam = async (req, res) => {
+const createTeam = async (req, res) => {
   const { name, team } = req.body;
 
   // get the username and user id from the session
@@ -57,7 +57,7 @@ const addTeam = async (req, res) => {
 };
 
 // replace a team of a given username and their team name
-const replaceTeam = async (req, res) => {
+const updateTeam = async (req, res) => {
   const { name, team } = req.body;
   const { username, _id: userId } = req.user;
   const newTeam = {
@@ -68,8 +68,8 @@ const replaceTeam = async (req, res) => {
   };
 
   try {
-    const replacedTeam = await Team.findOneAndReplace({ name, userId }, newTeam, { new: true });
-    console.log(replacedTeam);
+    const updatedTeam = await Team.findOneAndReplace({ name, userId }, newTeam, { new: true });
+    console.log(updatedTeam);
     res.status(200).json({ message: 'Team was successfully overwritten!' });
   } catch (err) {
     console.log(err);
@@ -100,7 +100,7 @@ const deleteTeam = async (req, res) => {
 
 module.exports = {
   getTeams,
-  addTeam,
-  replaceTeam,
+  createTeam,
+  updateTeam,
   deleteTeam,
 };

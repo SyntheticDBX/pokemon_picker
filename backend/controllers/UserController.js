@@ -1,62 +1,92 @@
-const User = require("../models/UserModel");
-const jwt = require("jsonwebtoken");
+const User = require('../models/UserModel');
+const Team = require('../models/TeamsModel');
+const { genPassword } = require('../lib/passwordUtils');
 
-const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.TOKEN_SECRET, {
-    expiresIn: 60 * 60 * 24 * 365,
+// register a new user
+const registerUser = (req, res) => {
+  const { username, password, password2 } = req.body;
+
+  if (password !== password2) {
+    return res.status(400).json({ message: 'Passwords do not match.' });
+  }
+
+  const saltHash = genPassword(password);
+
+  const { salt, hash } = saltHash;
+
+  const newUser = new User({
+    username,
+    hash,
+    salt,
   });
-};
-  // user login
-const loginUser = async (req, res) => {
-	try {
-		const { username, password } = req.body;
-		const user = await User.login(username, password);
-		const token = createToken(user._id);
-		res.cookie("jwt", token, {
-			httpOnly: true,
-			maxAge: 60 * 60 * 24 * 365 * 1000,
-		});
-		res.status(200).json({ username, token });
-	} catch (error) {
-		res.status(400).json({ error: error.message });
-	}
+
+  return newUser
+    .save()
+    .then((user) => {
+      console.log(user);
+      return res.status(200).json({ message: 'Registration successful!' });
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        return res.status(400).json({ message: 'That user already exists.' });
+      }
+      return res.status(500).json({ message: 'An error occurred. Please try again later.' });
+    });
 };
 
-  // user signup
-const signupUser = async (req, res) => {
-	try {
-		const { username, password, email, starter } = req.body;
-		const user = await User.signup(username, password, email, starter);
-		const token = createToken(user._id);
-		res.cookie("jwt", token, {
-			httpOnly: true,
-			maxAge: 60 * 60 * 24 * 365 * 1000,
-		});
-		res.status(201).json({ email, user: _id, token });
-	} catch (error) {
-		res.status(400).json({ error: error.message });
-	}
-};
+// login a user
+const loginUser = (req, res) => res.status(200).json({ message: 'Login successful!' });
 
-  // user logout
+// logout a user
 const logoutUser = (req, res) => {
-	res.cookie("jwt", "", { maxAge: 1 });
-	res.redirect("/");
+  req.logoutUser();
+  // returns you to the home page
+  return res.redirect('/');
 };
 
-// user profile
-const findUserById = async (req, res) => {
-	try {
-		const user = await User.findById({ _id: req.params.id});
-		res.status(200).json(user);
-	} catch (error) {
-		res.status(404).json({ message: error.message });
-	}
+// get the username of the user
+const getUsername = (req, res) => {
+  const username = req?.user?.username;
+  if (username) {
+    return res.status(200).json({ username });
+  }
+  return res.status(200).json({ username: '' });
+};
+
+// get all users
+const getUser = async (req, res) => {
+  const users = await User.find({}, { username: 1 }).lean();
+  res.status(200).json(users);
+};
+
+// delete a user and their teams
+const deleteUser = async (req, res) => {
+  const { username } = req.params;
+  console.log(`Deleting ${username} and their teams`);
+
+  // check if the user is trying to delete themselves
+  if (username === req.user.username) {
+    return res.status(400).json({ message: 'You cannot delete yourself.' });
+  }
+  try {
+    const teamPromise = Team.deleteMany({ username });
+    const userPromise = User.deleteOne({ username });
+    const queries = await Promise.all([teamPromise, userPromise]);
+    const [teamQuery] = queries;
+    return res
+      .status(200)
+      .json({ message: `Deleted ${username} and deleted ${teamQuery.deletedCount} teams.` });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'An error occurred.' });
+  }
 };
 
 module.exports = {
+  registerUser,
   loginUser,
-  signupUser,
   logoutUser,
-  findUserById,
+  getUsername,
+  getUser,
+  deleteUser,
 };
