@@ -1,80 +1,99 @@
-const Teams = require("../models/TeamsModel");
-const mongoose = require("mongoose");
+const Team = require("../models/TeamsModel");
 
-// get all teams
 const getAllTeams = async (req, res) => {
-  try {
-    const teams = await Teams.find();
-    res.status(200).json(teams);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+  let { username } = req.params;
+  if (!username) {
+    username = req.user.username;
   }
+
+  const teams = await Team.find(
+    { username },
+    { name: 1, team: 1, _id: 0 }
+  ).lean();
+  const teamLen = teams.length;
+
+  if (teamLen <= 0) {
+    return res.status(404).json({ error: "No teams found" });
+  }
+
+  const message =
+    teamLen === 1
+      ? `1 team found for ${username}`
+      : `${teamLen} teams found for ${username}`;
+
+  return res.status(200).json({ teams, message });
 };
 
-// get team by id
-const getTeamById = async (req, res) => {
-  try {
-    const team = await Teams.findById(req.params.id);
-    res.status(200).json(team);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
+const addTeam = async (req, res) => {
+  const { name, team } = req.body;
 
-// create team
-const createTeam = async (req, res) => {
+  const { username, _id: userId } = req.user;
+
+  const savedTeams = await Team.find({ name, userId });
+
+  if (savedTeams.length > 0) {
+    return res.status(409).json({ error: "Team already exists" });
+  }
+
+  const newTeam = new Team({
+    name,
+    team,
+    username,
+    userId,
+  });
+
   try {
-    const team = req.body;
-    const newTeam = new Teams(team);
     await newTeam.save();
-    res.status(201).json(newTeam);
+    res.status(201).json({ message: "Team added" });
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(409).json({ error: error.message });
   }
 };
 
-// update team
-const updateTeam = async (req, res) => {
-  const { id } = req.params;
+const replaceTeam = async (req, res) => {
+  const { name, team } = req.body;
+  const { username, _id: userId } = req.user;
+  const newTeam = {
+    name,
+    team,
+    username,
+    userId,
+  };
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).send("No such team");
+  try {
+    const replacedTeam = await Team.findOneAndReplace(
+      { name, userId },
+      newTeam,
+      { new: true }
+    );
+    res.status(200).json({ replacedTeam });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
-  const team = await Teams.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
-  if (!team) {
-    return res.status(404).send("No such team");
-  }
-  res.status(200).json(team);
 };
 
-// delete team
 const deleteTeam = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).send("No such team");
+  const { name, username } = req.params;
+
+  if (!name || !username) {
+    return res.status(400).json({ error: "Name and username required" });
   }
 
-	const team = await Teams.findOneAndDelete(
-		{ _id: id },
-		{
-			...req.body,
-		}
-	);
-	if (!team) {
-		return res.status(404).send("No such team");
-	}
-	res.status(200).json(team);
+  try {
+    const query = await Team.deleteOne({ name, username });
+    if (query.deletedCount === 1) {
+      return res.status(200).json({ message: "Team deleted" });
+    } else {
+      return res.status(404).json({ error: "Team not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 module.exports = {
-	getAllTeams,
-	getTeamById,
-	createTeam,
-	updateTeam,
-	deleteTeam,
+  getAllTeams,
+  addTeam,
+  replaceTeam,
+  deleteTeam,
 };
