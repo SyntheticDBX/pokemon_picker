@@ -1,53 +1,28 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-// creating team schema
-const teamSchema = new Schema({
-
-    teamName: {
+const TeamSchema = new mongoose.Schema({
+    name: {
         type: String,
         required: true,
-        unique: true
     },
-    pokemon: {
+    team: [
+        {
+            name: { type: String },
+            types: [{ type: String }],
+            sprite: { type: String },
+            _id: false,
+        },
+    ],
+    username: {
         type: String,
-        required: true
+        required: true,
     },
-    moves: {
+    userId: {
         type: String,
-        required: true
+        required: true,
     },
-    evs: {
-        type: String,
-        required: true
-    },
-    ivs: {
-        type: String,
-        required: true
-    },
-    nature: {
-        type: String,
-        required: true
-    },
-    item: {
-        type: String,
-        required: true
-    },
-    ability: {
-        type: String,
-        required: true
-    },
-    type: {
-        type: String,
-        required: true
-    },
-    level: {
-        type: String,
-        required: true
-    }
+});
 
-})
+const Team = mongoose.model('Team', TeamSchema);
 
-module.exports = mongoose.model('Team', teamSchema);
-
+module.exports = Team;

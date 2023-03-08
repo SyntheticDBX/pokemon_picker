@@ -20,11 +20,6 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
-    starter: {
-        type: String,
-        enum: ['fire', 'water', 'grass'],
-        required: true
-    }
 })
 
 // static method signup
