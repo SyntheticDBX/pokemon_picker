@@ -1,25 +1,14 @@
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-const UserRoutes = require('./routes/UserRoutes');
-const TeamsRoutes = require('./routes/TeamsRoutes');
+const session = require('express-session');
+const passport = require('passport');
+const router = require('./router');
 
 // express app
 const app = express();
-
-// middleware
-app.use(express.json());
-
-app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
-})
-
-
-// routes
-app.use('/api/users', UserRoutes);
-app.use('/api/teams', TeamsRoutes);
 
 // connection to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -30,3 +19,33 @@ mongoose.connect(process.env.MONGO_URI)
         })
     })
     .catch(error => console.log(error));
+
+// static files
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// session
+const sessionStore = new MongoStore({
+    mongooseConnection: mongoose.connection,
+    collection: 'sessions'
+});
+app.use (
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: sessionStore,
+        cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
+    })
+);
+
+// passport
+require('./config/passport');
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// router
+router(app);
