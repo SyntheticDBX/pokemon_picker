@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/User');
-const { validPassword } = require('../lib/passwordUtils');
+const User = require('../models/UserModel');
+const { validPassword } = require('../lib/passportUtilities');
 
 // this is a passport.js function that verifies whether the user exists
 // and whether the encrypted password is correct

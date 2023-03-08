@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const router = require('./router');
+const MongoStore = require('connect-mongo');
 
 // express app
 const app = express();
@@ -26,17 +27,12 @@ app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// session
-const sessionStore = new MongoStore({
-    mongooseConnection: mongoose.connection,
-    collection: 'sessions'
-});
 app.use (
     session({
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: sessionStore,
+        store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
         cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
     })
 );
@@ -47,5 +43,6 @@ require('./config/passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
-// router
-router(app);
+// routes
+app.use('/', router);
+
