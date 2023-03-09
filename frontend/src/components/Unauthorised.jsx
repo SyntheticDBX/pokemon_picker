@@ -1,5 +1,5 @@
 import React from 'react';
-import Snorlax from '../media/snorlax.png';
+import Snorlax from '../media/sleeping_snorlax.png';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -8,7 +8,7 @@ const Container = styled.div`
   text-align: center;
 `;
 
-const Unauthorized = () => {
+const Unauthorised = () => {
   return (
     <Container>
       <img src={Snorlax} alt="a sleeping snorlax" style={{ maxHeight: '500px' }} />
@@ -22,4 +22,4 @@ const Unauthorized = () => {
   );
 };
 
-export default Unauthorized;
+export default Unauthorised;

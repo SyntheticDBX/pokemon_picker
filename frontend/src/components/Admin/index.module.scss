@@ -1,0 +1,17 @@
+.container {
+  padding: 0 5%;
+}
+
+.flexContainer {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5em;
+}
+
+.wrap {
+  flex-flow: wrap;
+}
+
+.button {
+  margin-bottom: 0.2em;
+}

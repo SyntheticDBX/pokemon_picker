@@ -82,21 +82,22 @@ const deleteTeam = async (req, res) => {
   const { name, username } = req.params;
 
   if (!name || !username) {
-    res.status(400).json({ message: 'Bad request, missing name or username.' });
+    return res.status(400).json({ message: 'Bad request, missing name or username.' });
   }
 
   try {
     const query = await Team.deleteOne({ name, username });
     if (query.deletedCount === 1) {
-      res.status(200).json({ message: 'Team was successfully deleted.' });
+      return res.status(200).json({ message: 'Team was successfully deleted.' });
     } else {
-      res.status(400).json({ message: 'The team is already deleted.' });
+      return res.status(400).json({ message: 'The team is already deleted.' });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: 'An error occurred.' });
+    return res.status(500).json({ message: 'An error occurred.' });
   }
 };
+
 
 module.exports = {
   getTeams,

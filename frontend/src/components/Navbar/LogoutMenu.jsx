@@ -1,9 +1,9 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './index.module.scss';
 
 const LogoutMenu = ({ user, setUser }) => {
-  const history = useHistory();
+  const history = useNavigate();
 
   // logs the user out and redirects them back to the home page
   const signOut = () => {

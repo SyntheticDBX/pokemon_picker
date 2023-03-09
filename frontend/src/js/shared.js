@@ -1,4 +1,4 @@
-// types and their correpsonding colors in hex format
+// types and their colors in hex format
 const TYPE_COLORS = {
   normal: '#A8A77A',
   fighting: '#C22E28',
@@ -38,7 +38,7 @@ const replaceTeam = async teamObj => {
     }
   } catch (err) {
     console.log(err);
-    return 'An occured while trying to update the team.';
+    return 'An error occured while trying to update the team.';
   }
 };
 
@@ -68,11 +68,11 @@ const saveTeam = async (name, team) => {
     }
   } catch (err) {
     console.log(err);
-    return 'An occured while trying to update the team.';
+    return 'An error occured while trying to update the team.';
   }
 };
-
-// https://stackoverflow.com/a/65244270/7838349
+// an array of numbers from 0 to N
+// only occurs at runtime, so it's not a big deal
 const arrayToN = N => {
   let i = 0,
     a = Array(N);
@@ -80,12 +80,4 @@ const arrayToN = N => {
   return a;
 };
 
-// modified version that starts from any inital value
-// didn't end needing this as I went for an alternative approach
-// that involved concatening arrays, but I will keep this around in case I need it later.
-const arrayFromToN = (i, N) => {
-  let a = Array(N - i);
-  while (i < N) a[i++] = i;
-};
-
-export { TYPE_COLORS, saveTeam, arrayToN, arrayFromToN };
+export { TYPE_COLORS, saveTeam, arrayToN };

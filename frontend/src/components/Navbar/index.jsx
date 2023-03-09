@@ -16,7 +16,7 @@ const Nav = styled.nav`
 `;
 
 const Navbar = ({ user, setUser }) => {
-  const links = ['/create-team', '/random-team', '/edit-team', '/admin'];
+  const links = ['/create-team', '/random-team', '/view-team', '/admin'];
   const descriptions = ['Create a team', 'Random teams', 'View teams', 'Admin'];
 
   const location = useLocation();
@@ -29,7 +29,7 @@ const Navbar = ({ user, setUser }) => {
   return (
     <Nav className="pure-menu pure-menu-horizontal">
       <h4 to="/" className="pure-menu-heading">
-        Pokémon Team Builder
+        Pokémon Picker
       </h4>
       <ul className="pure-menu-list">
         <li className="pure-menu-item">

@@ -1,6 +1,6 @@
 const User = require('../models/UserModel');
 const Team = require('../models/TeamsModel');
-const { genPassword } = require('../lib/passwordUtils');
+const { createPassword } = require('../lib/passportUtilities');
 
 // register a new user
 const registerUser = (req, res) => {
@@ -10,7 +10,7 @@ const registerUser = (req, res) => {
     return res.status(400).json({ message: 'Passwords do not match.' });
   }
 
-  const saltHash = genPassword(password);
+  const saltHash = createPassword(password);
 
   const { salt, hash } = saltHash;
 
@@ -39,10 +39,14 @@ const loginUser = (req, res) => res.status(200).json({ message: 'Login successfu
 
 // logout a user
 const logoutUser = (req, res) => {
-  req.logoutUser();
-  // returns you to the home page
-  return res.redirect('/');
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'An error occurred while logging out' });
+    }
+    return res.status(200).json({ message: 'Logout successful!' });
+  });
 };
+
 
 // get the username of the user
 const getUsername = (req, res) => {

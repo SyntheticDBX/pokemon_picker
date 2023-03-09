@@ -44,5 +44,4 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // routes
-app.use('/', router);
-
+router(app);
